@@ -19,43 +19,6 @@ def find_between_r(s, first, last):
     except ValueError:
         return ""
 
-# # Selecting from Dropdown Menu
-# from selenium import webdriver 
-# from selenium.webdriver.support.ui import Select 
-
-# def DropDown(URL):
-#     # Using chrome driver 
-#     driver = webdriver.Chrome(executable_path='/Users/Dewangtara/Desktop/Stock_AI/chromedriver')
-    
-#     # Web page url 
-#     driver.get("URL") 
-    
-#     # Find id of option 
-#     x = driver.find_element_by_id('ChartPeriod') 
-#     drop = Select(x) 
-    
-#     # Select by value 
-#     drop.select_by_value("10 Years") 
-#     datetime.time.sleep(4) 
-#     driver.close() 
-
-# # Clicking Button
-# def ClickButton(URL):
-#     # Here Chrome  will be used
-#     driver = webdriver.Chrome(executable_path='/Users/Dewangtara/Desktop/Stock_AI/chromedriver')
-    
-#     # Opening the website
-#     driver.get(URL)
-    
-#     # getting the button by class name
-#     button = driver.find_element_by_class_name("submit")
-    
-#     # clicking on the button
-#     button.click()
-#     datetime.time.sleep(4) 
-#     driver.close() 
-
-
 # Outputs Insider Trading Statistics with input of SEC Form 4 ticker code
 def InsiderTrading(url_code):
     Data = []
