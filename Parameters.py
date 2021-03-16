@@ -9,6 +9,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 from Insider import InsiderTrading
 from Initial_Parameters import Initial_Parameters
+import yfinance as yf
 
 
 # define moving average function
@@ -26,8 +27,7 @@ def string_to_float(lst):
     lst_updated = [float(i) for i in lst]
     return lst_updated
 
-
-def Parameters(Stock, Insider_URL):
+def Parameters(Stock, URL):
     #Get initial parameter array for latter calculations
     Initial = Initial_Parameters(Stock)
     Date = Initial[0]
@@ -110,42 +110,43 @@ def Parameters(Stock, Insider_URL):
     TR = List_L.max(axis = 1)
 
     SIZE = len(Open) - 253
-
-    # Insider Trading
-    Insider_Trades = InsiderTrading(Insider_URL)
     
-    
-
     # Date to dataframe
     df_Date = pd.DataFrame(Date)
 
-    # Testing Parameter Array
-    Parameters = [df_Date.tail(SIZE),
-                  pd.DataFrame(Open).tail(SIZE),
-                  pd.DataFrame(High).tail(SIZE), 
-                  pd.DataFrame(Low).tail(SIZE), 
-                  pd.DataFrame(Close).tail(SIZE), 
-                  pd.DataFrame(Adj_Close).tail(SIZE), 
-                  pd.DataFrame(Volume).tail(SIZE), 
-                  pd.DataFrame(Daily_Average).tail(SIZE), 
-                  SMA.tail(SIZE), 
-                  STDEV.tail(SIZE), 
-                  Upper_Band.tail(SIZE), 
-                  Lower_Band.tail(SIZE),
-                  Upper_Channel.tail(SIZE),
-                  Lower_Channel.tail(SIZE),
-                  RSI.tail(SIZE),
-                  MCAD.tail(SIZE),
-                  WilliamsR.tail(SIZE),
-                  Volatility.tail(SIZE),
-                  TR.tail(SIZE),
-                  Insider_Trades]
+    # Insider Trading
+    insider = InsiderTrading(URL)
 
-    # All Parameters returned as list of dataframes
-    # Parameters_df = pd.DataFrame(Parameters, columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Volume', 'Daily_Average', 'SMA', 'STDEV', 'Upper Band', 'Lower Band', 'Upper Channel', 'Lower Channel', 'RSI', 'MCAD', 'WilliamsR', 'Volatility', 'True Range'])
+    # S&P Index
+    start = datetime.datetime(2010, 1, 1)
+    end = datetime.datetime.now()
+    SP = yf.download('^GSPC', start, end)
+
+    # Testing Parameter Array
+    Parameters = [df_Date.tail(SIZE).to_numpy(),
+                  pd.DataFrame(Open).tail(SIZE).to_numpy(),
+                  pd.DataFrame(High).tail(SIZE).to_numpy(), 
+                  pd.DataFrame(Low).tail(SIZE).to_numpy(), 
+                  pd.DataFrame(Close).tail(SIZE).to_numpy(), 
+                  pd.DataFrame(Adj_Close).tail(SIZE).to_numpy(), 
+                  pd.DataFrame(Volume).tail(SIZE).to_numpy(), 
+                  pd.DataFrame(Daily_Average).tail(SIZE).to_numpy(), 
+                  SMA.tail(SIZE).to_numpy(), 
+                  STDEV.tail(SIZE).to_numpy(), 
+                  Upper_Band.tail(SIZE).to_numpy(), 
+                  Lower_Band.tail(SIZE).to_numpy(),
+                  Upper_Channel.tail(SIZE).to_numpy(),
+                  Lower_Channel.tail(SIZE).to_numpy(),
+                  RSI.tail(SIZE).to_numpy(),
+                  MCAD.tail(SIZE).to_numpy(),
+                  WilliamsR.tail(SIZE).to_numpy(),
+                  Volatility.tail(SIZE).to_numpy(),
+                  TR.tail(SIZE).to_numpy(),
+                  pd.DataFrame(SP['Open'].to_list()).tail(SIZE).to_numpy(),
+                  pd.DataFrame(SP['Volume'].to_list()).tail(SIZE).to_numpy(),
+                  pd.DataFrame(insider).tail(SIZE).to_numpy()]
+
+    # Parameters: {'Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Volume', 'Daily_Average', 'SMA', 'STDEV', 'Upper Band', 'Lower Band', 'Upper Channel', 'Lower Channel', 'RSI', 'MCAD', 'WilliamsR', 'Volatility', 'True Range', 'SP Open', 'SP Volume', 'Insider Trading'}
     return Parameters
 
-
-# Parameters = Parameters('NVDA', 1045810)
-# print(Parameters)
-
+# P = Parameters('NVDA', 1045810)
