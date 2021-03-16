@@ -1,12 +1,65 @@
+import datetime
 import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
+
+def find_between(s, first, last):
+    try:
+        start = s.index( first ) + len( first )
+        end = s.index( last, start )
+        return s[start:end]
+    except ValueError:
+        return ""
+
+def find_between_r(s, first, last):
+    try:
+        start = s.rindex( first ) + len( first )
+        end = s.rindex( last, start )
+        return s[start:end]
+    except ValueError:
+        return ""
+
+# # Selecting from Dropdown Menu
+# from selenium import webdriver 
+# from selenium.webdriver.support.ui import Select 
+
+# def DropDown(URL):
+#     # Using chrome driver 
+#     driver = webdriver.Chrome(executable_path='/Users/Dewangtara/Desktop/Stock_AI/chromedriver')
+    
+#     # Web page url 
+#     driver.get("URL") 
+    
+#     # Find id of option 
+#     x = driver.find_element_by_id('ChartPeriod') 
+#     drop = Select(x) 
+    
+#     # Select by value 
+#     drop.select_by_value("10 Years") 
+#     datetime.time.sleep(4) 
+#     driver.close() 
+
+# # Clicking Button
+# def ClickButton(URL):
+#     # Here Chrome  will be used
+#     driver = webdriver.Chrome(executable_path='/Users/Dewangtara/Desktop/Stock_AI/chromedriver')
+    
+#     # Opening the website
+#     driver.get(URL)
+    
+#     # getting the button by class name
+#     button = driver.find_element_by_class_name("submit")
+    
+#     # clicking on the button
+#     button.click()
+#     datetime.time.sleep(4) 
+#     driver.close() 
+
 
 # Outputs Insider Trading Statistics with input of SEC Form 4 ticker code
 def InsiderTrading(url_code):
     Data = []
     Data2 = []
-
     for k in range(9):
         url = "https://www.secform4.com/insider-trading/" + str(url_code) + ("-" + str(k) if k != 0 else "") + ".htm"
         page_data = requests.get(url) # requests data object
@@ -30,7 +83,7 @@ def InsiderTrading(url_code):
                 isSale = True
                 temp_date = str(sale)[15:25]
                 date = temp_date
-            purchase = data_point.findAll("td", {"class": "P"})
+            purchase = data_point.findAll("$0")
             if not(purchase == []):
                 temp_date = str(purchase)[15:25]
                 date = temp_date
@@ -75,17 +128,38 @@ def InsiderTrading(url_code):
             totalAmount.append(money[counter3])
         counter3 += 1
 
+    owned = []
+    for j in totalAmount:
+        start = str(j)[-5:-2] + "</td>, <td>"
+        end = "<br/><span class=\"ownership\">"
+        s = Data2
+        between = find_between(s, start, end)
+        rev = ""
+        for i in reversed(between):
+            if i == ">":
+                break
+            if i != ",":
+                rev += i
+        out = ""
+        for i in reversed(rev):
+            out += i
+        owned.append(out)
+
     Output = []
     counter4 = 0
     while counter4 < len(Data):
         Row = []
         Row.append(Data[counter4][0])
-        Row.append(Data[counter4][1])
-        Row.append(avgPrice[counter4])
-        Row.append(totalAmount[counter4])
+
+        # Represents the number of shares bought or sold divided by the number of initital shares before transaction multiplied by number of shares
+        if Data[counter4][1] == "Sale":
+            Row.append(-1 * (float(totalAmount[counter4]) / float(avgPrice[counter4])))
+        else:
+            Row.append(float(totalAmount[counter4]) / float(avgPrice[counter4]))
+
         Output.append(Row)
         counter4 += 1
     
-    Output_df = pd.DataFrame(Output, columns = ['Date','Type', 'Avg Price', 'Volume'])
+    Output_df = pd.DataFrame(Output, columns = ['Date', 'Weighted Exchange'])
 
     return Output_df
