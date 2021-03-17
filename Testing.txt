@@ -1,5 +1,0 @@
-Percent Error between actual and predicted Open values over 10 years of NVDIA and AMD Data with 'x' value being the length of prediction and 
-'y' value being the average percent error in prediction.
-
-AMD:
-![AMD_Algo1](https://user-images.githubusercontent.com/5204743/111399144-209ac980-869b-11eb-92bf-c132fb097c3f.png)
