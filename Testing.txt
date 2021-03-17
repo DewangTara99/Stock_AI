@@ -1,0 +1,1 @@
+Results for NVDA and AMD stock using Multiple Linear Regression with one layer:
