@@ -1,0 +1,3 @@
+Percent Error between actual and predicted Open values over 10 years of NVDIA and AMD Data with 'x' value being the length of prediction and 
+'y' value being the average percent error in prediction.
+
